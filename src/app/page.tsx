@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { HomeHero } from "@/components/home-hero";
+import { ProductCard } from "@/components/product-card";
+import { products } from "@/data/mock-data";
 
 export default function Home() {
   return (
@@ -40,18 +42,8 @@ export default function Home() {
           <Link href="/shop?sort=newest" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative aspect-[3/4]">
-                  <Image src={`https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=600&fit=crop&ix=${i}`} alt="Product" fill className="object-cover" />
-                </div>
-                <div className="p-4">
-                  <p className="font-medium">Linen Shirt</p>
-                  <p className="text-sm text-muted-foreground">$79</p>
-                </div>
-              </CardContent>
-            </Card>
+          {products.filter(p => p.newArrival).slice(0, 4).map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
@@ -82,18 +74,8 @@ export default function Home() {
           <Link href="/shop?clearance=1" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative aspect-[3/4]">
-                  <Image src={`https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=600&fit=crop&ix=${i}`} alt="Clearance Product" fill className="object-cover" />
-                </div>
-                <div className="p-4">
-                  <p className="font-medium">Cotton Tee</p>
-                  <p className="text-sm text-muted-foreground"><span className="text-destructive line-through mr-2">$49</span>$29</p>
-                </div>
-              </CardContent>
-            </Card>
+          {products.filter(p => p.clearance).slice(0, 4).map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>

@@ -4,11 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/components/cart-store";
 import { Button } from "@/components/ui/button";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 export default function CartPage() {
   const { state, totalPrice, dispatch } = useCart();
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 space-y-8">
+      <div className="mb-6">
+        <Breadcrumbs 
+          items={[
+            { label: "Cart" }
+          ]} 
+        />
+      </div>
       <h1 className="text-2xl font-semibold">Cart</h1>
       {state.items.length === 0 ? (
         <div className="text-muted-foreground">Your cart is empty.</div>

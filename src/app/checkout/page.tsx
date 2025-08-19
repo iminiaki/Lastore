@@ -4,11 +4,21 @@ import { useCart } from "@/components/cart-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 export default function CheckoutPage() {
   const { state, totalPrice, dispatch } = useCart();
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 grid gap-10 md:grid-cols-[1fr_360px]">
+    <div className="mx-auto max-w-5xl px-4 py-12">
+      <div className="mb-6">
+        <Breadcrumbs 
+          items={[
+            { label: "Cart", href: "/cart" },
+            { label: "Checkout" }
+          ]} 
+        />
+      </div>
+      <div className="grid gap-10 md:grid-cols-[1fr_360px]">
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">Checkout</h1>

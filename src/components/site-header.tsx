@@ -20,21 +20,28 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="font-semibold text-lg">
-          Lastore
-        </Link>
-        <nav className="hidden gap-6 md:flex">
-          {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm text-muted-foreground hover:text-foreground">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="hidden md:block">
+      <div className="mx-auto flex h-16 max-w-7xl items-center px-4">
+        {/* Left side - Logo and Navigation */}
+        <div className="flex items-center gap-12 flex-1">
+          <Link href="/" className="font-semibold text-lg">
+            Lastore
+          </Link>
+          <nav className="hidden gap-6 md:flex">
+            {nav.map((item) => (
+              <Link key={item.href} href={item.href} className="text-sm text-muted-foreground hover:text-foreground">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+        
+        {/* Center - Search Bar */}
+        <div className="hidden md:flex justify-center flex-1">
           <Search />
         </div>
-        <div className="flex items-center gap-2">
+        
+        {/* Right side - User actions */}
+        <div className="flex items-center gap-2 flex-1 justify-end">
           <Link href="/profile" aria-label="Profile" className="hidden md:block">
             <Button variant="ghost" size="icon">
               <User2 className="h-5 w-5" />

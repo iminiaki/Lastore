@@ -23,14 +23,7 @@ export function FilterModal({ groups, priceMax }: { groups: Group[]; priceMax: n
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Filters</DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen(false)}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            
           </div>
         </DialogHeader>
         <div className="py-4">

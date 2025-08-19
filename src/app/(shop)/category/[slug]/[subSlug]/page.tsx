@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { categories, products as allProducts, brands, materials, colors, sizes } from "@/data/mock-data";
 import { notFound } from "next/navigation";
 import { Filters } from "@/components/filters";
@@ -6,16 +5,20 @@ import { ProductGrid } from "@/components/product-grid";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { filterProducts, parseQuery } from "@/lib/shop";
 
-export default async function CategoryPage({ params, searchParams }: {
-  params: Promise<{ slug: string }>;
+export default async function SubCategoryPage({ params, searchParams }: {
+  params: Promise<{ slug: string; subSlug: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { slug } = await params;
+  const { slug, subSlug } = await params;
   const sp = await searchParams;
+  
   const category = categories.find((c) => c.slug === slug);
   if (!category) return notFound();
+  
+  const subCategory = category.subCategories.find((s) => s.slug === subSlug);
+  if (!subCategory) return notFound();
 
-  const query = parseQuery({ ...sp, category: category.slug });
+  const query = parseQuery({ ...sp, category: category.slug, subCategory: subCategory.slug });
   const products = filterProducts(allProducts, query);
   const priceMax = Math.max(...allProducts.map((p) => p.price));
 
@@ -32,7 +35,8 @@ export default async function CategoryPage({ params, searchParams }: {
         <Breadcrumbs 
           items={[
             { label: "Shop", href: "/shop" },
-            { label: category.name }
+            { label: category.name, href: `/category/${category.slug}` },
+            { label: subCategory.name }
           ]} 
         />
       </div>
@@ -41,24 +45,9 @@ export default async function CategoryPage({ params, searchParams }: {
           <Filters groups={groups} priceMax={priceMax} />
         </aside>
         <section className="space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-semibold capitalize">{category.name}</h1>
-              <p className="text-muted-foreground">Browse {category.name.toLowerCase()} collection</p>
-            </div>
-            
-            {/* Sub-category Links */}
-            <div className="flex flex-wrap gap-2">
-              {category.subCategories.map((subCategory) => (
-                <Link
-                  key={subCategory.id}
-                  href={`/category/${category.slug}/${subCategory.slug}`}
-                  className="px-3 py-1 text-sm border rounded-md hover:bg-accent transition-colors capitalize"
-                >
-                  {subCategory.name}
-                </Link>
-              ))}
-            </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold capitalize">{subCategory.name}</h1>
+            <p className="text-muted-foreground">Browse {subCategory.name.toLowerCase()} in {category.name.toLowerCase()}</p>
           </div>
           <ProductGrid products={products} />
         </section>
@@ -66,5 +55,3 @@ export default async function CategoryPage({ params, searchParams }: {
     </div>
   );
 }
-
-

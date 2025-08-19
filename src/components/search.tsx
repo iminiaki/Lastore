@@ -101,7 +101,7 @@ export function Search() {
   };
 
   return (
-    <div className="relative flex-1 max-w-md mx-4" ref={searchRef}>
+    <div className="relative flex-1 max-w-md" ref={searchRef}>
       <form onSubmit={handleSearch} className="relative">
         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input

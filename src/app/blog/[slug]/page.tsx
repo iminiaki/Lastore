@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { posts } from "@/data/mock-data";
 import { ShareButton } from "@/components/share-button";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -9,6 +10,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   if (!post) return notFound();
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 space-y-6">
+      <div className="mb-6">
+        <Breadcrumbs 
+          items={[
+            { label: "Blog", href: "/blog" },
+            { label: post.title }
+          ]} 
+        />
+      </div>
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">{post.title}</h1>
         <div className="flex items-center gap-3 text-sm text-muted-foreground">

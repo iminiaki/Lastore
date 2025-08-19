@@ -56,7 +56,25 @@ export function ProductCard({ product }: { product: Product }) {
       <CardContent className="p-0">
         <Link href={`/product/${product.id}`} className="block">
           <div className="relative aspect-[1/1]">
-            <Image src={product.images[0]} alt={product.name} fill className="object-cover transition-transform group-hover:scale-105" />
+            <Image 
+              src={product.images[0]} 
+              alt={product.name} 
+              fill 
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              className={`object-cover transition-transform group-hover:scale-105 ${!product.inStock ? 'grayscale' : ''}`}
+              priority={false}
+              loading="lazy"
+              quality={85}
+              onError={(e) => {
+                // Fallback to a placeholder if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=600&fit=crop";
+              }}
+            />
+            {/* Fallback placeholder for debugging */}
+            <div className="absolute inset-0 bg-muted flex items-center justify-center text-xs text-muted-foreground opacity-0 pointer-events-none">
+              Image loading...
+            </div>
             
             {/* Discount Badge */}
             {discountPercentage && (
@@ -82,15 +100,27 @@ export function ProductCard({ product }: { product: Product }) {
             </Button>
 
             {/* Quick Add Button - Desktop Only (Hover) */}
-            <Button
-              variant="secondary"
-              size="sm"
-              className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background border border-border hover:bg-accent text-foreground font-medium px-3 py-1.5 transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
-              onClick={handleQuickAdd}
-            >
-              <ShoppingCart className="h-4 w-4 mr-1" />
-              Quick Add
-            </Button>
+            {product.inStock ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background border border-border hover:bg-accent text-foreground font-medium px-3 py-1.5 transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
+                onClick={handleQuickAdd}
+              >
+                <ShoppingCart className="h-4 w-4 mr-1" />
+                Quick Add
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background border border-border text-muted-foreground font-medium px-3 py-1.5 transition-all cursor-not-allowed !opacity-100"
+                disabled
+              >
+                
+                Out of Stock
+              </Button>
+            )}
           </div>
         </Link>
         
@@ -129,14 +159,16 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
             
             {/* Quick Add Button - Mobile Only */}
-            <Button
-              variant="secondary"
-              size="icon"
-              className="ml-3 h-8 w-8 bg-background border border-border hover:bg-accent text-foreground transition-colors flex-shrink-0 md:hidden"
-              onClick={handleQuickAdd}
-            >
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
+            {product.inStock && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className="ml-3 h-8 w-8 bg-background border border-border hover:bg-accent text-foreground transition-colors flex-shrink-0 md:hidden"
+                onClick={handleQuickAdd}
+              >
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+            ) }
           </div>
         </div>
       </CardContent>

@@ -15,14 +15,14 @@ export default function Home() {
           <h2 className="text-2xl font-semibold">Categories</h2>
           <Link href="/shop" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
         </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="flex overflow-x-scroll md:overflow-x-hidden md:grid md:grid-cols-2 gap-4 lg:grid-cols-4 pb-4">
           {[
             { name: "Men", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop" },
             { name: "Women", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=400&fit=crop" },
             { name: "Kids", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop" },
             { name: "Accessories", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop" }
           ].map((c) => (
-            <Card key={c.name} className="overflow-hidden">
+            <Card key={c.name} className="overflow-hidden min-w-[200px]">
               <CardContent className="p-0">
                 <div className="relative aspect-square">
                   <Image src={c.image} alt={c.name} fill className="object-cover" />

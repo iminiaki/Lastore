@@ -2,6 +2,7 @@ import { products as allProducts, brands, materials, colors, sizes } from "@/dat
 import { Filters } from "@/components/filters";
 import { FilterModal } from "@/components/filter-modal";
 import { ProductGrid } from "@/components/product-grid";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { filterProducts, parseQuery } from "@/lib/shop";
 
 export default async function ShopPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -17,6 +18,13 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
   ];
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
+      <div className="mb-6">
+        <Breadcrumbs 
+          items={[
+            { label: "Shop" }
+          ]} 
+        />
+      </div>
       <div className="grid gap-10 md:grid-cols-[260px_1fr]">
         <aside className="hidden md:block md:sticky md:top-20 h-max">
           <Filters groups={groups} priceMax={priceMax} />

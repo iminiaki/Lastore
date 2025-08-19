@@ -1,103 +1,124 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { HomeHero } from "@/components/home-hero";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="space-y-20">
+      <HomeHero />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section className="mx-auto max-w-7xl px-4">
+        <div className="mb-8 flex items-end justify-between">
+          <h2 className="text-2xl font-semibold">Categories</h2>
+          <Link href="/shop" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {[
+            { name: "Men", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop" },
+            { name: "Women", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=400&fit=crop" },
+            { name: "Kids", image: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&h=400&fit=crop" },
+            { name: "Accessories", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop" }
+          ].map((c) => (
+            <Card key={c.name} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative aspect-square">
+                  <Image src={c.image} alt={c.name} fill className="object-cover" />
+                </div>
+                <div className="p-4">
+                  <p className="font-medium">{c.name}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4">
+        <div className="mb-8 flex items-end justify-between">
+          <h2 className="text-2xl font-semibold">New arrivals</h2>
+          <Link href="/shop?sort=newest" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative aspect-[3/4]">
+                  <Image src={`https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=600&fit=crop&ix=${i}`} alt="Product" fill className="object-cover" />
+                </div>
+                <div className="p-4">
+                  <p className="font-medium">Linen Shirt</p>
+                  <p className="text-sm text-muted-foreground">$79</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4">
+        <div className="grid gap-4 md:grid-cols-2">
+          {[
+            { title: "Most Rated: Men", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop" },
+            { title: "Most Rated: Women", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=400&fit=crop" }
+          ].map((item, i) => (
+            <div key={i} className="relative overflow-hidden rounded-xl bg-muted">
+              <div className="relative aspect-[16/7]">
+                <Image src={item.image} alt={item.title} fill className="object-cover" />
+              </div>
+              <div className="absolute inset-0 flex items-end p-6">
+                <div className="rounded-md bg-background/75 px-4 py-2 backdrop-blur">
+                  <p className="font-medium">{item.title}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4">
+        <div className="mb-8 flex items-end justify-between">
+          <h2 className="text-2xl font-semibold">Clearance</h2>
+          <Link href="/shop?clearance=1" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative aspect-[3/4]">
+                  <Image src={`https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&h=600&fit=crop&ix=${i}`} alt="Clearance Product" fill className="object-cover" />
+                </div>
+                <div className="p-4">
+                  <p className="font-medium">Cotton Tee</p>
+                  <p className="text-sm text-muted-foreground"><span className="text-destructive line-through mr-2">$49</span>$29</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-16">
+        <div className="mb-8 flex items-end justify-between">
+          <h2 className="text-2xl font-semibold">Latest posts</h2>
+          <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground">View all</Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="relative aspect-video">
+                  <Image src={`https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop&ix=${i}`} alt="Post" fill className="object-cover" />
+                </div>
+                <div className="p-4">
+                  <p className="font-medium">Effortless Wardrobe Essentials</p>
+                  <p className="text-sm text-muted-foreground">5 min read</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

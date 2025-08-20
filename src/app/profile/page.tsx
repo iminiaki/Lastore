@@ -256,7 +256,7 @@ export default function ProfilePage() {
         <p className="text-muted-foreground">Welcome back, {mockUser.name.split(" ")[0]}</p>
       </div>
 
-      <nav className="flex space-x-1 bg-muted p-1 rounded-lg">
+      <nav className="flex space-x-1 bg-muted p-1 rounded-lg overflow-x-scroll">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (

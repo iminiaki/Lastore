@@ -1,15 +1,18 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useReducer } from "react";
+import React, { createContext, useContext, useMemo, useReducer, useEffect, useRef } from "react";
 import type { CartItem, Product } from "@/types";
+import { toast } from "@/components/ui/use-toast";
 
 type CartAction =
   | { type: "add"; product: Product; quantity?: number }
   | { type: "remove"; productId: string }
-  | { type: "clear" };
+  | { type: "clear" }
+  | { type: "clearToast" };
 
 interface CartState {
   items: CartItem[];
+  pendingToast?: { title: string; description: string };
 }
 
 const CartContext = createContext<{
@@ -29,6 +32,10 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           items: state.items.map((i) =>
             i.productId === action.product.id ? { ...i, quantity: i.quantity + quantity } : i
           ),
+          pendingToast: {
+            title: "Product updated",
+            description: `${action.product.name} quantity updated in cart`,
+          },
         };
       }
       return {
@@ -36,13 +43,29 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           ...state.items,
           { productId: action.product.id, quantity, product: action.product },
         ],
+        pendingToast: {
+          title: "Added to cart",
+          description: `${action.product.name} has been added to your cart`,
+        },
       };
     }
     case "remove": {
-      return { items: state.items.filter((i) => i.productId !== action.productId) };
+      return { 
+        items: state.items.filter((i) => i.productId !== action.productId),
+        pendingToast: undefined,
+      };
     }
     case "clear": {
-      return { items: [] };
+      return { 
+        items: [],
+        pendingToast: undefined,
+      };
+    }
+    case "clearToast": {
+      return { 
+        ...state,
+        pendingToast: undefined,
+      };
     }
     default:
       return state;
@@ -50,7 +73,16 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [] });
+  const [state, dispatch] = useReducer(cartReducer, { items: [], pendingToast: undefined });
+
+  // Handle pending toasts after render
+  useEffect(() => {
+    if (state.pendingToast) {
+      toast(state.pendingToast);
+      // Clear the pending toast
+      dispatch({ type: "clearToast" });
+    }
+  }, [state.pendingToast]);
 
   const { totalQuantity, totalPrice } = useMemo(() => {
     const totalQuantityCalc = state.items.reduce((acc, i) => acc + i.quantity, 0);

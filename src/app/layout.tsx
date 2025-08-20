@@ -7,6 +7,7 @@ import { WishlistProvider } from "@/components/wishlist-store";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { BottomNav } from "@/components/bottom-nav";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +42,7 @@ export default function RootLayout({
               <main className="min-h-[calc(100vh-4rem)] pb-16 md:pb-0">{children}</main>
               <SiteFooter />
               <BottomNav />
+              <Toaster />
             </WishlistProvider>
           </CartProvider>
         </ThemeProvider>

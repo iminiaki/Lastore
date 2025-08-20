@@ -9,11 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useWishlist } from "@/components/wishlist-store";
+import { useCart } from "@/components/cart-store";
+import { VariantSelector } from "@/components/variant-selector";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import Image from "next/image";
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("orders");
+  const [variantSelectorProduct, setVariantSelectorProduct] = useState<any>(null);
+  const [isVariantSelectorOpen, setIsVariantSelectorOpen] = useState(false);
 
   const tabs = [
     { id: "orders", label: "Orders", icon: Package },
@@ -23,6 +27,17 @@ export default function ProfilePage() {
   ];
 
   const { state: wishlistState, dispatch: wishlistDispatch } = useWishlist();
+  const { dispatch: cartDispatch } = useCart();
+
+  const handleAddToCartWithVariants = (product: any, selectedColor: string, selectedSize: string) => {
+    const productWithVariants = {
+      ...product,
+      selectedColor,
+      selectedSize,
+    };
+    cartDispatch({ type: "add", product: productWithVariants, quantity: 1 });
+    wishlistDispatch({ type: "remove", productId: product.id });
+  };
 
   const renderOrders = () => (
     <div className="space-y-6">
@@ -99,11 +114,11 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-4">
           {wishlistState.items.map((product) => (
             <Card key={product.id}>
-              <CardContent className="p-6">
-                <div className="relative aspect-[3/4] mb-4 overflow-hidden rounded-md bg-muted">
+              <CardContent className="p-4">
+                <div className="relative aspect-[1/1] mb-4 overflow-hidden rounded-md bg-muted">
                   <Image
                     src={product.images[0]}
                     alt={product.name}
@@ -115,7 +130,21 @@ export default function ProfilePage() {
                 <p className="text-sm text-muted-foreground capitalize">{product.category}</p>
                 <p className="font-medium mt-2">${product.price.toFixed(2)}</p>
                 <div className="flex gap-2 mt-4">
-                  <Button size="sm" className="flex-1">Add to Cart</Button>
+                  <Button 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => {
+                      if (product.colors.length > 0 || product.sizes.length > 0) {
+                        setVariantSelectorProduct(product);
+                        setIsVariantSelectorOpen(true);
+                      } else {
+                        cartDispatch({ type: "add", product, quantity: 1 });
+                        wishlistDispatch({ type: "remove", productId: product.id });
+                      }
+                    }}
+                  >
+                    Add to Cart
+                  </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -251,6 +280,19 @@ export default function ProfilePage() {
         {activeTab === "profile" && renderProfile()}
         {activeTab === "settings" && renderSettings()}
       </div>
+
+      {/* Variant Selector Modal */}
+      {variantSelectorProduct && (
+        <VariantSelector
+          product={variantSelectorProduct}
+          isOpen={isVariantSelectorOpen}
+          onClose={() => {
+            setIsVariantSelectorOpen(false);
+            setVariantSelectorProduct(null);
+          }}
+          onAddToCart={handleAddToCartWithVariants}
+        />
+      )}
     </div>
   );
 }

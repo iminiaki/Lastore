@@ -7,6 +7,8 @@ import { products, categories } from "@/data/mock-data";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ImageModal } from "@/components/image-modal";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/components/cart-store";
 import { useState, use } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,10 +17,23 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const product = products.find((p) => p.id === id);
   if (!product) return notFound();
 
-  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState(product.colors[0] || "");
+  const [selectedSize, setSelectedSize] = useState(product.sizes[0] || "");
+
+  const { dispatch: cartDispatch } = useCart();
+
+  const handleAddToCart = () => {
+    const productWithVariants = {
+      ...product,
+      selectedColor,
+      selectedSize,
+    };
+    cartDispatch({ type: "add", product: productWithVariants, quantity: 1 });
+  };
+
+  const canAddToCart = selectedColor && selectedSize;
 
   // Color mapping for color circles
   const colorMap: Record<string, string> = {
@@ -106,58 +121,65 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div className="text-2xl font-semibold">${product.price}</div>
         
         {/* Color Selection */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Color: {selectedColor}</span>
-            <span className="text-sm text-muted-foreground">{product.colors.length} options</span>
+        {product.colors.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Color: {selectedColor}</span>
+              <span className="text-sm text-muted-foreground">{product.colors.length} options</span>
+            </div>
+            <div className="flex gap-2">
+              {product.colors.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={cn(
+                    "w-8 h-8 rounded-full border-2 transition-all",
+                    colorMap[color] || 'bg-gray-300',
+                    selectedColor === color 
+                      ? "border-primary ring-2 ring-primary/20" 
+                      : "border-border hover:border-primary/50"
+                  )}
+                  title={color}
+                />
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {product.colors.map((color) => (
-              <button
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                className={cn(
-                  "w-8 h-8 rounded-full border-2 transition-all",
-                  colorMap[color] || 'bg-gray-300',
-                  selectedColor === color 
-                    ? "border-primary ring-2 ring-primary/20" 
-                    : "border-border hover:border-primary/50"
-                )}
-                title={color}
-              />
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Size Selection */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Size: {selectedSize}</span>
-            <span className="text-sm text-muted-foreground">{product.sizes.length} options</span>
+        {product.sizes.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Size: {selectedSize}</span>
+              <span className="text-sm text-muted-foreground">{product.sizes.length} options</span>
+            </div>
+            <div className="flex gap-2">
+              {product.sizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={cn(
+                    "px-4 py-2 text-sm border rounded-md transition-all",
+                    selectedSize === size
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-accent"
+                  )}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {product.sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={cn(
-                  "py-2 text-sm w-10 border rounded-md transition-all",
-                  selectedSize === size
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-accent"
-                )}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
-        <AddToCartButton 
-          productId={product.id} 
-          selectedColor={selectedColor}
-          selectedSize={selectedSize}
-        />
+        <Button 
+          onClick={handleAddToCart}
+          disabled={!canAddToCart}
+          className="w-full"
+          size="lg"
+        >
+          Add to Cart
+        </Button>
         
         <div>
           <h2 className="text-lg font-medium">Description</h2>

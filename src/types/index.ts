@@ -20,6 +20,8 @@ export interface Product {
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
+  selectedColor?: string;
+  selectedSize?: string;
 }
 
 export interface Category {

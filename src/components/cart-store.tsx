@@ -1,18 +1,21 @@
 "use client";
 
 import React, { createContext, useContext, useMemo, useReducer, useEffect, useRef } from "react";
-import type { CartItem, Product } from "@/types";
+import type { CartItem, Product, AppliedCoupon } from "@/types";
 import { toast } from "@/components/ui/use-toast";
 
 type CartAction =
   | { type: "add"; product: Product; quantity?: number }
-  | { type: "remove"; productId: string }
+  | { type: "remove"; variantKey: string }
   | { type: "clear" }
-  | { type: "clearToast" };
+  | { type: "clearToast" }
+  | { type: "applyCoupon"; coupon: AppliedCoupon }
+  | { type: "removeCoupon" };
 
 interface CartState {
   items: CartItem[];
   pendingToast?: { title: string; description: string };
+  appliedCoupon: AppliedCoupon | null;
 }
 
 const CartContext = createContext<{
@@ -20,17 +23,24 @@ const CartContext = createContext<{
   dispatch: React.Dispatch<CartAction>;
   totalQuantity: number;
   totalPrice: number;
+  subtotal: number;
+  discountAmount: number;
+  finalPrice: number;
 } | null>(null);
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "add": {
       const quantity = action.quantity ?? 1;
-      const existing = state.items.find((i) => i.productId === action.product.id);
+      
+      // Create a unique variant key based on product ID and selected variants
+      const variantKey = `${action.product.id}-${action.product.selectedColor || 'no-color'}-${action.product.selectedSize || 'no-size'}`;
+      
+      const existing = state.items.find((i) => i.variantKey === variantKey);
       if (existing) {
         return {
           items: state.items.map((i) =>
-            i.productId === action.product.id ? { ...i, quantity: i.quantity + quantity } : i
+            i.variantKey === variantKey ? { ...i, quantity: i.quantity + quantity } : i
           ),
           pendingToast: {
             title: "Product updated",
@@ -41,7 +51,12 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         items: [
           ...state.items,
-          { productId: action.product.id, quantity, product: action.product },
+          { 
+            productId: action.product.id, 
+            quantity, 
+            product: action.product,
+            variantKey 
+          },
         ],
         pendingToast: {
           title: "Added to cart",
@@ -51,7 +66,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     }
     case "remove": {
       return { 
-        items: state.items.filter((i) => i.productId !== action.productId),
+        items: state.items.filter((i) => i.variantKey !== action.variantKey),
         pendingToast: undefined,
       };
     }
@@ -59,6 +74,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return { 
         items: [],
         pendingToast: undefined,
+        appliedCoupon: null,
       };
     }
     case "clearToast": {
@@ -67,13 +83,29 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         pendingToast: undefined,
       };
     }
+    case "applyCoupon": {
+      return {
+        ...state,
+        appliedCoupon: action.coupon,
+      };
+    }
+    case "removeCoupon": {
+      return {
+        ...state,
+        appliedCoupon: null,
+      };
+    }
     default:
       return state;
   }
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [], pendingToast: undefined });
+  const [state, dispatch] = useReducer(cartReducer, { 
+    items: [], 
+    pendingToast: undefined,
+    appliedCoupon: null 
+  });
 
   // Handle pending toasts after render
   useEffect(() => {
@@ -84,13 +116,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.pendingToast]);
 
-  const { totalQuantity, totalPrice } = useMemo(() => {
+  const { totalQuantity, subtotal, discountAmount, finalPrice } = useMemo(() => {
     const totalQuantityCalc = state.items.reduce((acc, i) => acc + i.quantity, 0);
-    const totalPriceCalc = state.items.reduce((acc, i) => acc + i.quantity * i.product.price, 0);
-    return { totalQuantity: totalQuantityCalc, totalPrice: totalPriceCalc };
-  }, [state.items]);
+    const subtotalCalc = state.items.reduce((acc, i) => acc + i.quantity * i.product.price, 0);
+    const discountCalc = state.appliedCoupon?.discountAmount || 0;
+    const finalPriceCalc = subtotalCalc - discountCalc;
+    return { 
+      totalQuantity: totalQuantityCalc, 
+      subtotal: subtotalCalc,
+      discountAmount: discountCalc,
+      finalPrice: finalPriceCalc
+    };
+  }, [state.items, state.appliedCoupon]);
 
-  const value = useMemo(() => ({ state, dispatch, totalQuantity, totalPrice }), [state, totalQuantity, totalPrice]);
+  const value = useMemo(() => ({ 
+    state, 
+    dispatch, 
+    totalQuantity, 
+    subtotal,
+    discountAmount,
+    finalPrice 
+  }), [state, totalQuantity, subtotal, discountAmount, finalPrice]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

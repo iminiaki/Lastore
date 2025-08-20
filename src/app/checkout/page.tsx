@@ -1,13 +1,16 @@
 "use client";
 
 import { useCart } from "@/components/cart-store";
+import { useCoupon } from "@/components/coupon-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { CouponInput } from "@/components/coupon-input";
 
 export default function CheckoutPage() {
-  const { state, totalPrice, dispatch } = useCart();
+  const { state, subtotal, discountAmount, finalPrice, dispatch } = useCart();
+  const { state: couponState } = useCoupon();
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
       <div className="mb-6">
@@ -45,16 +48,33 @@ export default function CheckoutPage() {
           <div className="font-medium">Order summary</div>
           <div className="space-y-2 text-sm">
             {state.items.map((i) => (
-              <div key={i.productId} className="flex items-center justify-between">
+              <div key={i.variantKey} className="flex items-center justify-between">
                 <span>{i.product.name} × {i.quantity}</span>
                 <span>${(i.quantity * i.product.price).toFixed(2)}</span>
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-between border-t pt-2">
-            <span>Total</span>
-            <span className="font-semibold">${totalPrice.toFixed(2)}</span>
+          
+          <div className="border-t pt-4 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            
+            {discountAmount > 0 && (
+              <div className="flex items-center justify-between text-sm text-green-600">
+                <span>Discount</span>
+                <span>-${discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between border-t pt-2 font-semibold">
+              <span>Total</span>
+              <span>${finalPrice.toFixed(2)}</span>
+            </div>
           </div>
+          
+          <CouponInput subtotal={subtotal} />
         </aside>
       </div>
     </div>

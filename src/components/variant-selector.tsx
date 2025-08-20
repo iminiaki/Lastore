@@ -51,8 +51,8 @@ export function VariantSelector({ product, isOpen, onClose, onAddToCart }: Varia
         
         <div className="space-y-6">
           {/* Product Info */}
-          <div className="flex gap-4">
-            <div className="relative h-20 w-16 overflow-hidden rounded-md bg-muted flex-shrink-0">
+          <div className="flex gap-4 items-center">
+            <div className="relative h-20 w-20 overflow-hidden rounded-md bg-muted flex-shrink-0">
               <img
                 src={product.images[0]}
                 alt={product.name}

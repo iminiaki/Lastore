@@ -33,7 +33,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     cartDispatch({ type: "add", product: productWithVariants, quantity: 1 });
   };
 
-  const canAddToCart = selectedColor && selectedSize;
+  const canAddToCart = selectedColor && selectedSize && product.inStock;
 
   // Color mapping for color circles
   const colorMap: Record<string, string> = {
@@ -118,7 +118,16 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
         
-        <div className="text-2xl font-semibold">${product.price}</div>
+        <div className="flex items-center justify-between">
+          <div className="text-2xl font-semibold">${product.price}</div>
+          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+            product.inStock 
+              ? "bg-green-100 text-green-800" 
+              : "bg-red-100 text-red-800"
+          }`}>
+            {product.inStock ? "In Stock" : "Out of Stock"}
+          </div>
+        </div>
         
         {/* Color Selection */}
         {product.colors.length > 0 && (
@@ -178,7 +187,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           className="w-full"
           size="lg"
         >
-          Add to Cart
+          {product.inStock ? "Add to Cart" : "Out of Stock"}
         </Button>
         
         <div>

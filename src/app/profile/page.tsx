@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { mockUser, orders } from "@/data/mock-data";
-import { Package, Heart, User, Settings, Edit, Trash2, Star } from "lucide-react";
+import { Package, Heart, User, Settings, Edit, Trash2, Star, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useWishlist } from "@/components/wishlist-store";
 import { useCart } from "@/components/cart-store";
+import { useAuth } from "@/components/auth-context";
 import { VariantSelector } from "@/components/variant-selector";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ProtectedRoute } from "@/components/protected-route";
 import Image from "next/image";
 
 export default function ProfilePage() {
@@ -70,6 +72,7 @@ export default function ProfilePage() {
 
   const { state: wishlistState, dispatch: wishlistDispatch } = useWishlist();
   const { dispatch: cartDispatch } = useCart();
+  const { logout } = useAuth();
 
   const handleAddToCartWithVariants = (product: any, selectedColor: string, selectedSize: string) => {
     const productWithVariants = {
@@ -375,33 +378,65 @@ export default function ProfilePage() {
           <Button variant="outline">Save Settings</Button>
         </CardContent>
       </Card>
+
+      {/* Logout Section */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <h3 className="font-medium">Account Actions</h3>
+            <Button 
+              variant="outline" 
+              onClick={logout}
+              className="text-destructive border-destructive hover:bg-destructive hover:text-foreground"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 space-y-8">
-      <div className="mb-6">
-        <Breadcrumbs 
-          items={[
-            { label: "Profile" }
-          ]} 
-        />
-      </div>
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {mockUser.name.split(" ")[0]}</p>
-      </div>
+    <ProtectedRoute>
+      <div className="mx-auto max-w-5xl px-4 py-12 space-y-8">
+        <div className="mb-6">
+          <Breadcrumbs 
+            items={[
+              { label: "Profile" }
+            ]} 
+          />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back, {mockUser.name.split(" ")[0]}</p>
+        </div>
 
-      <nav className="flex space-x-1 bg-muted p-1 rounded-lg overflow-x-scroll sm:overflow-x-hidden">
+      <nav className="relative flex bg-muted p-1 rounded-lg overflow-x-scroll sm:overflow-x-hidden">
+        {/* Moving background indicator */}
+        <div 
+          className="absolute top-1 bottom-1 bg-background rounded-md shadow-sm transition-transform duration-300 ease-in-out"
+          style={{
+            width: `${100 / tabs.length}%`,
+            transform: `translateX(${tabs.findIndex(tab => tab.id === activeTab) * 100}%)`,
+          }}
+        />
+        
         {tabs.map((tab) => {
           const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
           return (
             <Button
               key={tab.id}
-              variant={activeTab === tab.id ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
               onClick={() => setActiveTab(tab.id)}
-              className="flex items-center gap-2"
+              className={`relative flex-1 flex items-center justify-center gap-2 transition-colors duration-200 ${
+                isActive 
+                  ? 'text-foreground hover:bg-transparent' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               <Icon className="h-4 w-4" />
               {tab.label}
@@ -625,7 +660,8 @@ export default function ProfilePage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }
 

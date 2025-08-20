@@ -3,13 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/components/cart-store";
+import { useCoupon } from "@/components/coupon-store";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingBag, Trash2 } from "lucide-react";
+import { CouponInput } from "@/components/coupon-input";
 
 export default function CartPage() {
-  const { state, totalPrice, dispatch } = useCart();
+  const { state, subtotal, discountAmount, finalPrice, dispatch } = useCart();
+  const { state: couponState } = useCoupon();
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 space-y-8">
       <div className="mb-6">
@@ -37,7 +40,7 @@ export default function CartPage() {
         <div className="grid gap-8 md:grid-cols-[1fr_320px]">
           <div className="space-y-4">
             {state.items.map((item) => (
-              <div key={item.productId} className="flex items-center gap-4 rounded-lg border p-3">
+              <div key={item.variantKey} className="flex items-center gap-4 rounded-lg border p-3">
                 <Link href={`/product/${item.productId}`} className="relative h-20 w-20 overflow-hidden rounded-md bg-muted hover:opacity-80 transition-opacity">
                   <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" />
                 </Link>
@@ -59,7 +62,7 @@ export default function CartPage() {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => dispatch({ type: "remove", productId: item.productId })}
+                  onClick={() => dispatch({ type: "remove", variantKey: item.variantKey })}
                   className="text-muted-foreground hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -68,11 +71,30 @@ export default function CartPage() {
             ))}
           </div>
           <div className="space-y-4 rounded-lg border p-4">
-            <div className="flex items-center justify-between">
-              <span>Subtotal</span>
-              <span className="font-medium">${totalPrice.toFixed(2)}</span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span>Subtotal</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              
+              {discountAmount > 0 && (
+                <div className="flex items-center justify-between text-sm text-green-600">
+                  <span>Discount</span>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex items-center justify-between border-t pt-2 font-semibold">
+                <span>Total</span>
+                <span>${finalPrice.toFixed(2)}</span>
+              </div>
             </div>
-            <Link href="/checkout"><Button className="w-full">Checkout</Button></Link>
+            
+            <CouponInput subtotal={subtotal} />
+            
+            <Link href="/checkout">
+              <Button className="w-full">Checkout</Button>
+            </Link>
           </div>
         </div>
       )}

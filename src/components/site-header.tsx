@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ShoppingBag, User2 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { useCart } from "./cart-store";
+import { useAuth } from "./auth-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "./search";
@@ -17,6 +18,7 @@ const nav = [
 
 export function SiteHeader() {
   const { totalQuantity } = useCart();
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,7 +44,7 @@ export function SiteHeader() {
         
         {/* Right side - User actions */}
         <div className="flex items-center gap-2 flex-1 justify-end">
-          <Link href="/profile" aria-label="Profile" className="hidden md:block">
+          <Link href={isAuthenticated ? "/profile" : "/auth/login"} aria-label="Profile" className="hidden md:block">
             <Button variant="ghost" size="icon">
               <User2 className="h-5 w-5" />
             </Button>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { categories, products as allProducts, brands, materials, colors, sizes } from "@/data/mock-data";
 import { notFound } from "next/navigation";
 import { Filters } from "@/components/filters";
+import { FilterModal } from "@/components/filter-modal";
 import { ProductGrid } from "@/components/product-grid";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { filterProducts, parseQuery } from "@/lib/shop";
@@ -37,28 +38,31 @@ export default async function CategoryPage({ params, searchParams }: {
         />
       </div>
       <div className="grid gap-10 md:grid-cols-[260px_1fr]">
-        <aside className="md:sticky md:top-20 h-max">
+        <aside className="hidden md:block md:sticky md:top-20 h-max">
           <Filters groups={groups} priceMax={priceMax} />
         </aside>
         <section className="space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-semibold capitalize">{category.name}</h1>
-              <p className="text-muted-foreground">Browse {category.name.toLowerCase()} collection</p>
+          <div className="flex items-start justify-between">
+            <div className="flex-1 space-y-4">
+              <div className="space-y-2">
+                <h1 className="text-2xl font-semibold capitalize">{category.name}</h1>
+                <p className="text-muted-foreground">Browse {category.name.toLowerCase()} collection</p>
+              </div>
+              
+              {/* Sub-category Links */}
+              <div className="flex flex-wrap gap-2">
+                {category.subCategories.map((subCategory) => (
+                  <Link
+                    key={subCategory.id}
+                    href={`/category/${category.slug}/${subCategory.slug}`}
+                    className="px-3 py-1 text-sm border rounded-md hover:bg-accent transition-colors capitalize"
+                  >
+                    {subCategory.name}
+                  </Link>
+                ))}
+              </div>
             </div>
-            
-            {/* Sub-category Links */}
-            <div className="flex flex-wrap gap-2">
-              {category.subCategories.map((subCategory) => (
-                <Link
-                  key={subCategory.id}
-                  href={`/category/${category.slug}/${subCategory.slug}`}
-                  className="px-3 py-1 text-sm border rounded-md hover:bg-accent transition-colors capitalize"
-                >
-                  {subCategory.name}
-                </Link>
-              ))}
-            </div>
+            <FilterModal groups={groups} priceMax={priceMax} />
           </div>
           <ProductGrid products={products} />
         </section>

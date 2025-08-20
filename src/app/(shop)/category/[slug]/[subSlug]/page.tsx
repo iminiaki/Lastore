@@ -1,6 +1,7 @@
 import { categories, products as allProducts, brands, materials, colors, sizes } from "@/data/mock-data";
 import { notFound } from "next/navigation";
 import { Filters } from "@/components/filters";
+import { FilterModal } from "@/components/filter-modal";
 import { ProductGrid } from "@/components/product-grid";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { filterProducts, parseQuery } from "@/lib/shop";
@@ -41,13 +42,16 @@ export default async function SubCategoryPage({ params, searchParams }: {
         />
       </div>
       <div className="grid gap-10 md:grid-cols-[260px_1fr]">
-        <aside className="md:sticky md:top-20 h-max">
+        <aside className="hidden md:block md:sticky md:top-20 h-max">
           <Filters groups={groups} priceMax={priceMax} />
         </aside>
         <section className="space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold capitalize">{subCategory.name}</h1>
-            <p className="text-muted-foreground">Browse {subCategory.name.toLowerCase()} in {category.name.toLowerCase()}</p>
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-2xl font-semibold capitalize">{subCategory.name}</h1>
+              <p className="text-muted-foreground">Browse {subCategory.name.toLowerCase()} in {category.name.toLowerCase()}</p>
+            </div>
+            <FilterModal groups={groups} priceMax={priceMax} />
           </div>
           <ProductGrid products={products} />
         </section>

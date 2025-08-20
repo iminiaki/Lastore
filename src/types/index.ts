@@ -95,6 +95,7 @@ export interface CartItem {
   productId: string;
   quantity: number;
   product: Product;
+  variantKey: string; // Unique identifier for product + variants
 }
 
 export type SortOption = 'newest' | 'top-sells' | 'price-low-high' | 'price-high-low';
@@ -109,4 +110,31 @@ export interface FilterState {
   sizes: string[];
   priceRange: [number, number];
   sortBy: SortOption;
+}
+
+export interface Coupon {
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  minAmount?: number;
+  maxDiscount?: number;
+  validFrom: Date;
+  validTo: Date;
+  usageLimit?: number;
+  usedCount: number;
+  applicableCategories?: string[];
+  applicableProducts?: string[];
+  description?: string;
+}
+
+export interface AppliedCoupon {
+  coupon: Coupon;
+  discountAmount: number;
+  finalPrice: number;
+}
+
+export interface AppliedCoupon {
+  coupon: Coupon;
+  discountAmount: number;
+  finalPrice: number;
 }

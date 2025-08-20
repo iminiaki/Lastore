@@ -50,7 +50,7 @@ export default function CheckoutPage() {
             {state.items.map((i) => (
               <div key={i.variantKey} className="flex items-center justify-between">
                 <span>{i.product.name} × {i.quantity}</span>
-                <span>${(i.quantity * i.product.price).toFixed(2)}</span>
+                <span>${(i.quantity * i.variantPrice).toFixed(2)}</span>
               </div>
             ))}
           </div>

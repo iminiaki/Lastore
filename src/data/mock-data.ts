@@ -99,6 +99,18 @@ export const products: Product[] = Array.from({ length: 24 }).map((_, idx) => {
     material: ["Cotton", "Linen", "Denim", "Wool"][idx % 4],
     colors: ["black", "white", "navy", "beige"].slice(0, (idx % 4) + 1),
     sizes: ["XS", "S", "M", "L", "XL"].slice(0, 3 + (idx % 3)),
+    // Add variant-specific pricing for some products
+    variants: idx % 3 === 0 ? [
+      { color: "black", size: "S", price: price + 5, originalPrice: originalPrice ? originalPrice + 5 : undefined, inStock: true },
+      { color: "black", size: "M", price: price + 3, originalPrice: originalPrice ? originalPrice + 3 : undefined, inStock: true },
+      { color: "black", size: "L", price: price + 7, originalPrice: originalPrice ? originalPrice + 7 : undefined, inStock: false },
+      { color: "white", size: "S", price: price + 2, originalPrice: originalPrice ? originalPrice + 2 : undefined, inStock: true },
+      { color: "white", size: "M", price: price, originalPrice, inStock: true },
+      { color: "white", size: "L", price: price + 4, originalPrice: originalPrice ? originalPrice + 4 : undefined, inStock: true },
+      { color: "navy", size: "S", price: price + 6, originalPrice: originalPrice ? originalPrice + 6 : undefined, inStock: true },
+      { color: "navy", size: "M", price: price + 1, originalPrice: originalPrice ? originalPrice + 1 : undefined, inStock: true },
+      { color: "navy", size: "L", price: price + 8, originalPrice: originalPrice ? originalPrice + 8 : undefined, inStock: false },
+    ] : undefined,
     rating: 3 + (idx % 3),
     reviews: 10 + idx * 2,
     inStock: idx % 7 !== 0,

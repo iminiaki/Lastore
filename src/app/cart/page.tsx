@@ -58,7 +58,7 @@ export default function CartPage() {
                     )}
                   </div>
                 </div>
-                <div className="font-medium">${item.quantity * item.product.price}</div>
+                <div className="font-medium">${item.quantity * item.variantPrice}</div>
                 <Button 
                   variant="ghost" 
                   size="sm"

@@ -1,9 +1,17 @@
+export interface ProductVariant {
+  color?: string;
+  size?: string;
+  price: number;
+  originalPrice?: number;
+  inStock: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
   description: string;
-  price: number;
-  originalPrice?: number;
+  price: number; // Base price
+  originalPrice?: number; // Base original price
   images: string[];
   category: string;
   subCategory: string;
@@ -11,6 +19,7 @@ export interface Product {
   material: string;
   colors: string[];
   sizes: string[];
+  variants?: ProductVariant[]; // Variant-specific pricing
   rating: number;
   reviews: number;
   inStock: boolean;
@@ -96,6 +105,7 @@ export interface CartItem {
   quantity: number;
   product: Product;
   variantKey: string; // Unique identifier for product + variants
+  variantPrice: number; // Price for this specific variant
 }
 
 export type SortOption = 'newest' | 'top-sells' | 'price-low-high' | 'price-high-low';

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useMemo, useReducer, useEffect, useRef } from "react";
 import type { CartItem, Product, AppliedCoupon } from "@/types";
 import { toast } from "@/components/ui/use-toast";
+import { getVariantPrice } from "@/lib/variant-utils";
 
 type CartAction =
   | { type: "add"; product: Product; quantity?: number }
@@ -36,6 +37,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       // Create a unique variant key based on product ID and selected variants
       const variantKey = `${action.product.id}-${action.product.selectedColor || 'no-color'}-${action.product.selectedSize || 'no-size'}`;
       
+      const variantPrice = getVariantPrice(action.product, action.product.selectedColor, action.product.selectedSize);
+      
       const existing = state.items.find((i) => i.variantKey === variantKey);
       if (existing) {
         return {
@@ -55,7 +58,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
             productId: action.product.id, 
             quantity, 
             product: action.product,
-            variantKey 
+            variantKey,
+            variantPrice
           },
         ],
         pendingToast: {
@@ -118,7 +122,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const { totalQuantity, subtotal, discountAmount, finalPrice } = useMemo(() => {
     const totalQuantityCalc = state.items.reduce((acc, i) => acc + i.quantity, 0);
-    const subtotalCalc = state.items.reduce((acc, i) => acc + i.quantity * i.product.price, 0);
+    const subtotalCalc = state.items.reduce((acc, i) => acc + i.quantity * i.variantPrice, 0);
     const discountCalc = state.appliedCoupon?.discountAmount || 0;
     const finalPriceCalc = subtotalCalc - discountCalc;
     return { 

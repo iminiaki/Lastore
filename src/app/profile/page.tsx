@@ -432,11 +432,12 @@ export default function ProfilePage() {
               variant="ghost"
               size="sm"
               onClick={() => setActiveTab(tab.id)}
-              className={`relative flex-1 flex items-center justify-center gap-2 transition-colors duration-200 ${
+              className={`relative flex-1 flex items-center justify-center gap-2 transition-colors duration-200 z-10 ${
                 isActive 
-                  ? 'text-foreground hover:bg-transparent' 
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'text-foreground' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
+              style={isActive ? { backgroundColor: 'transparent !important' } : {}}
             >
               <Icon className="h-4 w-4" />
               {tab.label}

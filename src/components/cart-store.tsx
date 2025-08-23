@@ -4,6 +4,7 @@ import React, { createContext, useContext, useMemo, useReducer, useEffect, useRe
 import type { CartItem, Product, AppliedCoupon } from "@/types";
 import { toast } from "@/components/ui/use-toast";
 import { getVariantPrice } from "@/lib/variant-utils";
+import { toastIcons } from "@/lib/toast-icons";
 
 type CartAction =
   | { type: "add"; product: Product; quantity?: number }
@@ -15,7 +16,7 @@ type CartAction =
 
 interface CartState {
   items: CartItem[];
-  pendingToast?: { title: string; description: string };
+  pendingToast?: { title: string; description: string; icon?: React.ReactNode };
   appliedCoupon: AppliedCoupon | null;
 }
 
@@ -23,7 +24,6 @@ const CartContext = createContext<{
   state: CartState;
   dispatch: React.Dispatch<CartAction>;
   totalQuantity: number;
-  totalPrice: number;
   subtotal: number;
   discountAmount: number;
   finalPrice: number;
@@ -48,7 +48,9 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           pendingToast: {
             title: "Product updated",
             description: `${action.product.name} quantity updated in cart`,
+            icon: toastIcons.cart,
           },
+          appliedCoupon: state.appliedCoupon,
         };
       }
       return {
@@ -65,13 +67,21 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         pendingToast: {
           title: "Added to cart",
           description: `${action.product.name} has been added to your cart`,
+          icon: toastIcons.cart,
         },
+        appliedCoupon: state.appliedCoupon,
       };
     }
     case "remove": {
+      const removedItem = state.items.find((i) => i.variantKey === action.variantKey);
       return { 
         items: state.items.filter((i) => i.variantKey !== action.variantKey),
-        pendingToast: undefined,
+        pendingToast: removedItem ? {
+          title: "Removed from cart",
+          description: `${removedItem.product.name} has been removed from your cart`,
+          icon: toastIcons.remove,
+        } : undefined,
+        appliedCoupon: state.appliedCoupon,
       };
     }
     case "clear": {
@@ -91,6 +101,11 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       return {
         ...state,
         appliedCoupon: action.coupon,
+        pendingToast: {
+          title: "Coupon applied",
+          description: `${action.coupon.coupon.code} has been applied successfully`,
+          icon: toastIcons.success,
+        },
       };
     }
     case "removeCoupon": {

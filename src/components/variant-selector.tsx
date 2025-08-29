@@ -79,14 +79,24 @@ export function VariantSelector({ product, isOpen, onClose, onAddToCart }: Varia
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     className={cn(
-                      "w-8 h-8 rounded-full border-2 transition-all",
+                      "relative w-8 h-8 rounded-full border-2 transition-all",
                       colorMap[color] || 'bg-gray-300',
                       selectedColor === color 
                         ? "border-primary ring-2 ring-primary/20" 
                         : "border-border hover:border-primary/50"
                     )}
                     title={color}
-                  />
+                  >
+                    {selectedColor === color && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-sm">
+                          <svg className="w-2.5 h-2.5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>

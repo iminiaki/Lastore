@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/components/cart-store";
-import { useCoupon } from "@/components/coupon-store";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +11,6 @@ import { CouponInput } from "@/components/coupon-input";
 
 export default function CartPage() {
   const { state, subtotal, discountAmount, finalPrice, dispatch } = useCart();
-  const { state: couponState } = useCoupon();
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 space-y-8">
       <div className="mb-6">

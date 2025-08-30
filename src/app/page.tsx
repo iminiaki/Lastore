@@ -43,7 +43,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <h3 className="text-white font-bold text-xl drop-shadow-lg mb-2">
+                        <h3 className="text-white font-bold text-3xl drop-shadow-lg mb-2">
                           {c.name}
                         </h3>
                         <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full">

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Product } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, TriangleAlert } from "lucide-react";
 import { useCart } from "./cart-store";
 import { useWishlist } from "./wishlist-store";
 import { VariantSelector } from "./variant-selector";
@@ -101,8 +101,9 @@ export function ProductCard({ product }: { product: Product }) {
 
             {/* Discount Badge */}
             {discountPercentage && (
-              <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-medium px-2 py-1 rounded">
-                -{discountPercentage}%
+              <div className="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg transform transition-all duration-300 border border-red-400/30 backdrop-blur-sm">
+                <span className="relative z-10">-{discountPercentage}%</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-red-400/20 to-red-600/20 rounded-full animate-pulse"></div>
               </div>
             )}
 
@@ -127,7 +128,7 @@ export function ProductCard({ product }: { product: Product }) {
               <Button
                 variant="secondary"
                 size="sm"
-                className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background border border-border hover:bg-accent text-foreground font-medium px-3 py-1.5 transition-all opacity-0 group-hover:opacity-100 hidden md:flex"
+                className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background border border-border hover:bg-accent text-foreground font-medium px-3 py-1.5 transition-all opacity-0 group-hover:opacity-100 hidden md:flex cursor-pointer"
                 onClick={handleQuickAdd}
               >
                 <ShoppingCart className="h-4 w-4 mr-1" />
@@ -140,6 +141,7 @@ export function ProductCard({ product }: { product: Product }) {
                 className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-background border border-border text-muted-foreground font-medium px-3 py-1.5 transition-all cursor-not-allowed !opacity-100"
                 disabled
               >
+                <TriangleAlert className="h-4 w-4 mr-1" />
                 Out of Stock
               </Button>
             )}

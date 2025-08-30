@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-context";
 import { CartProvider } from "@/components/cart-store";
-import { CouponProvider } from "@/components/coupon-store";
 import { WishlistProvider } from "@/components/wishlist-store";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -40,15 +39,13 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
-              <CouponProvider>
-                <WishlistProvider>
-                  <SiteHeader />
-                  <main className="min-h-[calc(100vh-4rem)] pb-16 md:pb-0">{children}</main>
-                  <SiteFooter />
-                  <BottomNav />
-                  <Toaster />
-                </WishlistProvider>
-              </CouponProvider>
+              <WishlistProvider>
+                <SiteHeader />
+                <main className="min-h-[calc(100vh-4rem)] pb-16 md:pb-0">{children}</main>
+                <SiteFooter />
+                <BottomNav />
+                <Toaster />
+              </WishlistProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

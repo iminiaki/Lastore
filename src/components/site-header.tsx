@@ -8,6 +8,7 @@ import { useAuth } from "./auth-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "./search";
+import Image from "next/image";
 
 const nav = [
   { href: "/shop", label: "Shop" },
@@ -26,7 +27,8 @@ export function SiteHeader() {
         {/* Left side - Logo and Navigation */}
         <div className="flex items-center gap-12 flex-1">
           <Link href="/" className="font-semibold text-lg">
-            Lastore
+            <Image src="/logo_dark.png" alt="Lastore" width={100} height={100} className="block dark:hidden" />
+            <Image src="/logo_light.png" alt="Lastore" width={100} height={100} className="hidden dark:block" />
           </Link>
           <nav className="hidden gap-6 md:flex">
             {nav.map((item) => (

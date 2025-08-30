@@ -11,6 +11,9 @@ export function countActiveFilters(params: ReadonlyURLSearchParams): number {
       count += value.split(',').filter(Boolean).length;
     }
   });
+  // Count category and subCategory if present
+  if (params.get('category')) count += 1;
+  if (params.get('subCategory')) count += 1;
   
   // Count price range if it's not at default
   const minPrice = params.get('minPrice');

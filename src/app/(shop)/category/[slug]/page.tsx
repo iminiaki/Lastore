@@ -26,6 +26,7 @@ export default async function CategoryPage({ params, searchParams }: {
     { key: "color", title: "Color", options: colors },
     { key: "size", title: "Size", options: sizes },
   ];
+  const subOptionsByCategory = { [category.slug]: category.subCategories.map(s => ({ label: s.name, value: s.slug })) } as Record<string, { label: string; value: string }[]>;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
@@ -39,7 +40,7 @@ export default async function CategoryPage({ params, searchParams }: {
       </div>
       <div className="grid gap-10 md:grid-cols-[260px_1fr]">
         <aside className="hidden md:block md:sticky md:top-20 h-max">
-          <Filters groups={groups} priceMax={priceMax} />
+          <Filters groups={groups} priceMax={priceMax} subOptionsByCategory={subOptionsByCategory} />
         </aside>
         <section className="space-y-6">
           <div className="flex items-start justify-between">
@@ -62,7 +63,7 @@ export default async function CategoryPage({ params, searchParams }: {
                 ))}
               </div>
             </div>
-            <FilterModal groups={groups} priceMax={priceMax} />
+            <FilterModal groups={groups} priceMax={priceMax} subOptionsByCategory={subOptionsByCategory} />
           </div>
           <ProductGrid products={products} />
         </section>

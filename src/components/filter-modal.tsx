@@ -10,8 +10,9 @@ import { countActiveFilters } from "@/lib/filter-utils";
 import { Badge } from "@/components/ui/badge";
 
 type Group = { key: string; title: string; options: string[] };
+type Option = { label: string; value: string };
 
-export function FilterModal({ groups, priceMax }: { groups: Group[]; priceMax: number }) {
+export function FilterModal({ groups, priceMax, categoryOptions, subOptionsByCategory }: { groups: Group[]; priceMax: number; categoryOptions?: Option[]; subOptionsByCategory?: Record<string, Option[]> }) {
   const [open, setOpen] = useState(false);
   const params = useSearchParams();
   const router = useRouter();
@@ -41,7 +42,7 @@ export function FilterModal({ groups, priceMax }: { groups: Group[]; priceMax: n
           <DialogTitle>Filters</DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto py-4">
-          <Filters groups={groups} priceMax={priceMax} />
+          <Filters groups={groups} priceMax={priceMax} categoryOptions={categoryOptions} subOptionsByCategory={subOptionsByCategory} />
         </div>
         <div className="flex gap-2 pt-4 border-t flex-shrink-0">
           <Button

@@ -1,4 +1,4 @@
-import { products as allProducts, brands, materials, colors, sizes } from "@/data/mock-data";
+import { products as allProducts, brands, materials, colors, sizes, categories } from "@/data/mock-data";
 import { Filters } from "@/components/filters";
 import { FilterModal } from "@/components/filter-modal";
 import { ProductGrid } from "@/components/product-grid";
@@ -10,6 +10,8 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
   const query = parseQuery(sp);
   const products = filterProducts(allProducts, query);
   const priceMax = Math.max(...allProducts.map((p) => p.price));
+  const categoryOptions = categories.map(c => ({ label: c.name, value: c.slug }));
+  const subOptionsByCategory = Object.fromEntries(categories.map(c => [c.slug, c.subCategories.map(s => ({ label: s.name, value: s.slug }))]));
   const groups = [
     { key: "brand", title: "Brand", options: brands },
     { key: "material", title: "Material", options: materials },
@@ -27,7 +29,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
       </div>
       <div className="grid gap-10 md:grid-cols-[260px_1fr]">
         <aside className="hidden md:block md:sticky md:top-20 h-max">
-          <Filters groups={groups} priceMax={priceMax} />
+          <Filters groups={groups} priceMax={priceMax} categoryOptions={categoryOptions} subOptionsByCategory={subOptionsByCategory} />
         </aside>
         <section className="space-y-6">
           <div className="flex items-start justify-between">
@@ -41,7 +43,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                 </p>
               )}
             </div>
-            <FilterModal groups={groups} priceMax={priceMax} />
+            <FilterModal groups={groups} priceMax={priceMax} categoryOptions={categoryOptions} subOptionsByCategory={subOptionsByCategory} />
           </div>
           <ProductGrid products={products} />
         </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,10 +14,22 @@ import { X } from "lucide-react";
 import type { SortOption } from "@/types";
 
 type Group = { key: string; title: string; options: string[] };
+type Option = { label: string; value: string };
 
-export function Filters({ groups, priceMax }: { groups: Group[]; priceMax: number }) {
+export function Filters({ 
+  groups, 
+  priceMax,
+  categoryOptions,
+  subOptionsByCategory
+}: { 
+  groups: Group[]; 
+  priceMax: number;
+  categoryOptions?: Option[];
+  subOptionsByCategory?: Record<string, Option[]>;
+}) {
   const router = useRouter();
   const params = useSearchParams();
+  const pathname = usePathname();
 
   const selected = useMemo(() => new URLSearchParams(params.toString()), [params]);
 
@@ -28,18 +40,32 @@ export function Filters({ groups, priceMax }: { groups: Group[]; priceMax: numbe
     else set.add(value);
     if (set.size) selected.set(key, Array.from(set).join(","));
     else selected.delete(key);
-    router.push(`/shop?${selected.toString()}`);
+    router.push(`${pathname}?${selected.toString()}`);
   };
 
   const setRange = (min: number, max: number) => {
     selected.set("minPrice", String(min));
     selected.set("maxPrice", String(max));
-    router.push(`/shop?${selected.toString()}`);
+    router.push(`${pathname}?${selected.toString()}`);
   };
 
   const setSort = (sortBy: SortOption) => {
     selected.set("sortBy", sortBy);
-    router.push(`/shop?${selected.toString()}`);
+    router.push(`${pathname}?${selected.toString()}`);
+  };
+
+  const setCategory = (category: string) => {
+    if (category) selected.set("category", category);
+    else selected.delete("category");
+    // reset subCategory when category changes
+    selected.delete("subCategory");
+    router.push(`${pathname}?${selected.toString()}`);
+  };
+
+  const setSubCategory = (sub: string) => {
+    if (sub) selected.set("subCategory", sub);
+    else selected.delete("subCategory");
+    router.push(`${pathname}?${selected.toString()}`);
   };
 
   const min = Number(params.get("minPrice") || 0);
@@ -54,37 +80,49 @@ export function Filters({ groups, priceMax }: { groups: Group[]; priceMax: numbe
   // Check if price filter is active
   const isPriceActive = min > 0 || max < priceMax;
 
-  // Get all active filters
+  // Get all active filters (including category and subCategory)
   const activeFilters = useMemo(() => {
     const filters: Array<{ key: string; value: string; label: string; type: 'category' | 'price' }> = [];
-    
-    // Add category filters
-    groups.forEach(group => {
+
+    // category (single)
+    const cat = params.get('category');
+    if (cat) {
+      const label = categoryOptions?.find((o) => o.value === cat)?.label || cat;
+      filters.push({ key: 'category', value: cat, label, type: 'category' });
+    }
+
+    // subCategory (multi)
+    const subs = params.get('subCategory');
+    if (subs) {
+      subs
+        .split(',')
+        .filter(Boolean)
+        .forEach((sub) => {
+          const label = subOptionsByCategory?.[cat || '']?.find((o) => o.value === sub)?.label || sub;
+          filters.push({ key: 'subCategory', value: sub, label, type: 'category' });
+        });
+    }
+
+    // other groups
+    groups.forEach((group) => {
       const values = params.get(group.key);
       if (values) {
-        values.split(',').filter(Boolean).forEach(value => {
-          filters.push({
-            key: group.key,
-            value,
-            label: value,
-            type: 'category'
+        values
+          .split(',')
+          .filter(Boolean)
+          .forEach((value) => {
+            filters.push({ key: group.key, value, label: value, type: 'category' });
           });
-        });
       }
     });
-    
-    // Add price filter if active
+
+    // price
     if (isPriceActive) {
-      filters.push({
-        key: 'price',
-        value: `${min}-${max}`,
-        label: `$${min} - $${max}`,
-        type: 'price'
-      });
+      filters.push({ key: 'price', value: `${min}-${max}`, label: `$${min} - ${max}`, type: 'price' });
     }
-    
+
     return filters;
-  }, [params, groups, isPriceActive, min, max]);
+  }, [params, groups, isPriceActive, min, max, categoryOptions, subOptionsByCategory]);
 
   // Remove a specific filter
   const removeFilter = (filter: typeof activeFilters[0]) => {
@@ -101,7 +139,7 @@ export function Filters({ groups, priceMax }: { groups: Group[]; priceMax: numbe
         selected.delete(filter.key);
       }
     }
-    router.push(`/shop?${selected.toString()}`);
+    router.push(`${pathname}?${selected.toString()}`);
   };
 
   // Clear all filters
@@ -111,7 +149,9 @@ export function Filters({ groups, priceMax }: { groups: Group[]; priceMax: numbe
     });
     selected.delete('minPrice');
     selected.delete('maxPrice');
-    router.push(`/shop?${selected.toString()}`);
+    selected.delete('category');
+    selected.delete('subCategory');
+    router.push(`${pathname}?${selected.toString()}`);
   };
 
   return (
@@ -165,6 +205,100 @@ export function Filters({ groups, priceMax }: { groups: Group[]; priceMax: numbe
       </Select>
 
       <Accordion type="multiple" className="w-full">
+        {/* Category Accordion */}
+        {categoryOptions && (
+          <AccordionItem value="category">
+            <AccordionTrigger asChild>
+              <button className="flex w-full items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
+                <span>Category</span>
+                <div className="flex items-center gap-2">
+                  {params.get('category') && (
+                    <Badge className="h-5 min-w-5 justify-center rounded-sm px-1 text-[10px] bg-primary text-primary-foreground">1</Badge>
+                  )}
+                  <svg
+                    className="h-4 w-4 shrink-0 transition-transform duration-200"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6,9 12,15 18,9" />
+                  </svg>
+                </div>
+              </button>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-2">
+                {categoryOptions.map((opt) => {
+                  const checked = params.get('category') === opt.value;
+                  return (
+                    <div className="flex items-center gap-2" key={opt.value}>
+                      <Checkbox id={`cat-${opt.value}`} checked={checked} onCheckedChange={() => setCategory(checked ? '' : opt.value)} />
+                      <Label htmlFor={`cat-${opt.value}`}>{opt.label}</Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+
+        {/* Subcategory Accordion */}
+        {subOptionsByCategory && (
+          <AccordionItem value="subCategory">
+            <AccordionTrigger asChild>
+              <button className="flex w-full items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180">
+                <span>Subcategory</span>
+                <div className="flex items-center gap-2">
+                  {getActiveCount('subCategory') > 0 && (
+                    <Badge className="h-5 min-w-5 justify-center rounded-sm px-1 text-[10px] bg-primary text-primary-foreground">
+                      {getActiveCount('subCategory')}
+                    </Badge>
+                  )}
+                  <svg
+                    className="h-4 w-4 shrink-0 transition-transform duration-200"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6,9 12,15 18,9" />
+                  </svg>
+                </div>
+              </button>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-2">
+                {(() => {
+                  const catParam = params.get('category');
+                  const keys = Object.keys(subOptionsByCategory);
+                  const effectiveCat = catParam || (keys.length === 1 ? keys[0] : '');
+                  const options = effectiveCat ? (subOptionsByCategory[effectiveCat] || []) : [];
+                  return options.length ? (
+                    options.map((opt) => {
+                      const values = new Set((params.get('subCategory')?.split(',') || []).filter(Boolean));
+                      const checked = values.has(opt.value);
+                      return (
+                        <div className="flex items-center gap-2" key={opt.value}>
+                          <Checkbox id={`sub-${opt.value}`} checked={checked} onCheckedChange={() => toggle('subCategory', opt.value)} />
+                          <Label htmlFor={`sub-${opt.value}`}>{opt.label}</Label>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-xs text-muted-foreground">Select a category to see subcategories</div>
+                  );
+                })()}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        )}
         {groups.map((g) => {
           const activeCount = getActiveCount(g.key);
           return (

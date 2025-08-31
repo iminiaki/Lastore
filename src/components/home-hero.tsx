@@ -8,7 +8,7 @@ import { useFadeIn } from "@/lib/gsap";
 export function HomeHero() {
   useFadeIn(".hero-animate", { delay: 0.1 });
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden noisy">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-14 md:grid-cols-2 hero-animate">
         <div className="space-y-6">
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">Minimal styles<br/>for every season</h1>

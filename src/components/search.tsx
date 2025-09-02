@@ -134,9 +134,9 @@ export function Search() {
               <Link
                 key={product.id}
                 href={`/product/${product.id}`}
-                className={`flex items-center gap-3 p-3 transition-colors ${
+                className={`relative flex items-center gap-3 p-3 transition-colors ${
                   index === selectedIndex
-                    ? "bg-primary/10 border-l-2 border-l-primary"
+                    ? "bg-primary/10 before:absolute before:left-0 before:h-4 before:w-1 before:rounded-r-md before:bg-primary before:content-['']"
                     : "hover:bg-muted/50"
                 }`}
                 onClick={() => setIsOpen(false)}

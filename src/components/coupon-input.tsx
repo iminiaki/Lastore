@@ -145,7 +145,7 @@ export function CouponInput({ subtotal, className = "" }: CouponInputProps) {
               variant="ghost"
               size="sm"
               onClick={handleRemoveCoupon}
-              className="h-auto p-1 text-green-600 hover:text-green-800 hover:bg-green-100"
+              className="h-10 p-1 text-green-600 hover:text-green-800 hover:!bg-green-100"
             >
               <X className="h-4 w-4" />
             </Button>
